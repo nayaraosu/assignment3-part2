@@ -13,7 +13,21 @@ function displayGists(gists)
 	{
 		var gist_obj =  JSON.stringify(gists[i]);
 		gist_obj = gists[i];
-		console.log(gist_obj);
+		var files = gist_obj.files;
+		for (var prop in files)
+		{
+			//console.log(prop);
+			var dict = files[prop];
+			for(var item in dict)
+			{
+				//console.log(item);
+				if(item == "language")
+				{
+					//console.log(dict.language);
+				}
+			}
+		}
+		
 		var gist_id = gist_obj['id'];
 		var gist_owner = gist_obj.owner;
 		var gist_created = gist_obj.created_at;
@@ -51,6 +65,7 @@ function doSomething(){
 	var owner = gist.owner;
 	var language = gist.language;
 	var description = gist.description;
+	var files = gist.files;
 	var url = gist.repos_url;
 	var idhtml = "<b>id: </b>" + id +"<br>";
 	var deschtml = "<b>id: </b>" + description +"<br>";
@@ -60,7 +75,7 @@ function doSomething(){
 	var btn =  '<button id="find" onclick="favorite(this.id)">Find Gists</button>';
 
 	var gisthtml = "<div>" + idhtml + deschtml +ownerhtml + langhtml +rephtml+btn+"</div>";
-	console.log(gisthtml);
+	console.log(files);
 	var elem = document.createElement("div");
 	elem.innerHTML = gisthtml;
 	var eleme = document.getElementById("gist-area");
@@ -78,31 +93,56 @@ function favorite(p)
 	favdiv.textContent = p;
 
 }
+
 function getAllGists()
 {
-	var httpRequest = new XMLHttpRequest();
-	httpRequest.open('GET',"https://api.github.com/gists");
-	httpRequest.send(null);
+	var totalgists = []
+	var pages = document.getElementById("gist-pages").value;
+	var chosenlangs = [];
+	var pychk = document.getElementById("python").checked;
+	var sqlchk = document.getElementById("sql").checked;
+	var javachk = document.getElementById("javascript").checked;
+	var jsonchk = document.getElementById("json").checked;
+	params = []
+	for(i=1; i<=pages; i++)
+	{
+		params.push("page="+i);
+	}
+	param_str = params.join("&");
+	if(pychk)
+	{
+		chosenlangs.push("python");
+	}
+	if(sqlchk)
+	{
+		chosenlangs.push("sql");
+	}
 
-	httpRequest.onreadystatechange = function(){
+	if(javachk)
+	{
+		chosenlangs.push("javascript");
+	}
+	if(jsonchk)
+	{
+		chosenlangs.push("JSON");
+	}
+	var httpRequest = new XMLHttpRequest();
+	var gisturl = "https://api.github.com/gists?"+param_str;
+	console.log(gisturl);
+	httpRequest.open('GET',gisturl);
+	httpRequest.send(null);
+	httpRequest.onreadystatechange = function()
+	{
 		if(httpRequest.status == 200)
 		{
 			console.log("All good!");
 			var response = JSON.parse(httpRequest.responseText);
-			displayGists(response);
-			//return response;
-			/*
 			console.log(response.length);
-			for(var i = 0; i<response.length; i++)
-			{
-				console.log(JSON.stringify(response[i]));
-			} */
-			
 		}
 		else
 		{
-
 			console.log("All bad!");
 		}
 	};
+
 }
