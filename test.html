@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="gist.js"></script>
+  <title>Test Page</title>
+</head>
+<body>
+  <label>Number of gists: <input type="number" id="gist-input" min="1" max="5"></label>
+  <label>Python<input type="checkbox" id="python"></label>
+  <label>JSON<input type="checkbox" id="json"></label>
+  <label>Javascript<input type="checkbox" id="javascript"></label>
+  <label>SQL<input type="checkbox" id="sql"></label>
+  <button id="main-search" onclick="doSomething()">Find Gists</button>
+  <h1>Favorites</h1>
+  <div id="favorites"></div>
+  <div id="gist-area"></div>
+  
+  <div id="testgist">
+  <b>id: </b><br>
+  <b>description: </b><br>
+  <b>language: </b><br>
+  <b>owner: </b><br>
+  <b>repo url: </b><br>
+  </div>
+</body>
+</html>
