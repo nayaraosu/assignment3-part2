@@ -2,11 +2,30 @@
 window.onload = function()
 {
 	//document.getElementById("gist_area").innerHTML = "<b>stuff</b>";
-}
 
+}
+function displayFavorites()
+{
+
+}
+function removeFavorite(p)
+{
+
+}
+function clearFavoriteArea()
+{
+
+}
+function addFavorite(p)
+{
+	var favdiv = document.getElementById("favorites");
+	favdiv.textContent = p;
+	localStorage.setItem('test', ['testdata', 'moredata']);
+
+}
 function displayGists(gists)
 {	var main = document.getElementById("gist-area");
-	main.innerHTML = "";
+	//main.innerHTML = "";
 
 	//var allGists = getAllGists();
 	for(var i = 0; i<gists.length; i++)
@@ -38,8 +57,8 @@ function displayGists(gists)
 		//var ownerhtml = "<b>Owner: </b>" + gist_owner +"<br>";
 		//var langhtml = "<b>Language: </b>" + gist_lang +"<br>";
 		var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
-		var btn =  '<button id="'+gist_id+'" onclick="favorite(this.id)">Find Gists</button>';
-		var gisthtml = "<div>" + idhtml + deschtml +rephtml+btn+"</div>";	
+		var btn =  '<button id="'+gist_id+'" onclick="addFavorite(this.id)">Add to Favorites</button>';
+		var gisthtml = "<div>" + idhtml + deschtml +rephtml+btn+"<br><br></div>";	
 		var elem = document.createElement("div");
 		elem.id = "div-"+gist_id;
 		elem.innerHTML = gisthtml;
@@ -78,8 +97,6 @@ function doSomething(){
 	console.log(files);
 	var elem = document.createElement("div");
 	elem.innerHTML = gisthtml;
-	var eleme = document.getElementById("gist-area");
-	eleme.innerHTML = "";
 	eleme.appendChild(elem);
 
 	//create gist html
@@ -87,16 +104,58 @@ function doSomething(){
 	// append to main div\
 
 }
-function favorite(p)
+
+function clear()
 {
-	var favdiv = document.getElementById("favorites");
-	favdiv.textContent = p;
+	var mainDiv = document.getElementById("gist-area");
+	mainDiv.innerHTML = "";
+	console.log("Page cleared");
 
 }
 
+function getGists()
+{	
+	clear();
+	var pages = document.getElementById("gist-pages").value;
+	var totalGists = [];
+	for(i=1; i<=pages; i++)
+	{
+		getGistPage(i);
+	}
+	//console.length("Total: "+totalGists.length);
+
+}
+function getGistPage(page)
+{
+		var httpRequest = new XMLHttpRequest();
+		var gisturl = "https://api.github.com/gists?page="+page;
+		console.log(gisturl);
+		httpRequest.open('GET',gisturl);
+		httpRequest.send(null);
+		httpRequest.onreadystatechange = function()
+		{
+			if(httpRequest.readyState == 4)
+			{
+				if(httpRequest.status == 200)
+				{
+					console.log("All good!" + page );
+					var response = JSON.parse(httpRequest.responseText);
+					console.log(response.length);
+					displayGists(response);
+					return response;
+				}
+				else
+				{
+					console.log("All bad!");
+				}
+			}
+		};
+
+
+}
 function getAllGists()
 {
-	var totalgists = []
+	var totalgists = [];
 	var pages = document.getElementById("gist-pages").value;
 	var chosenlangs = [];
 	var pychk = document.getElementById("python").checked;
@@ -126,23 +185,30 @@ function getAllGists()
 	{
 		chosenlangs.push("JSON");
 	}
-	var httpRequest = new XMLHttpRequest();
-	var gisturl = "https://api.github.com/gists?"+param_str;
-	console.log(gisturl);
-	httpRequest.open('GET',gisturl);
-	httpRequest.send(null);
-	httpRequest.onreadystatechange = function()
+	
+	//for(var pagex=1;pagex<5;pagex++)
 	{
-		if(httpRequest.status == 200)
+		var httpRequest = new XMLHttpRequest();
+		var gisturl = "https://api.github.com/gists?page=1&page=2&per_page=100";//+pagex;
+		console.log(gisturl);
+		httpRequest.open('GET',gisturl);
+		httpRequest.send(null);
+		httpRequest.onreadystatechange = function()
 		{
-			console.log("All good!");
-			var response = JSON.parse(httpRequest.responseText);
-			console.log(response.length);
-		}
-		else
-		{
-			console.log("All bad!");
-		}
-	};
-
+			if(httpRequest.readyState == 4)
+			{
+				if(httpRequest.status == 200)
+				{
+					console.log("All good!" );
+					var response = JSON.parse(httpRequest.responseText);
+					console.log(response.length);
+					return response;
+				}
+				else
+				{
+					console.log("All bad!");
+				}
+			}
+		};
+	}
 }
