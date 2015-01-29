@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="gist.js"></script>
+  <link rel="stylesheet" href="a3.css">
+  
+  <title>Test Page</title>
+
+</head>
+<body>
+  <div class="search-area">
+    <label>Number of Pages: <input type="number" id="gist-pages" value="1" min="1" max="5"></label>
+    <label>Python<input type="checkbox" id="python"></label>
+    <label>JSON<input type="checkbox" id="json"></label>
+    <label>Javascript<input type="checkbox" id="javascript"></label>
+    <label>SQL<input type="checkbox" id="sql"></label>
+    <button id="main-search" onclick="getGists()">Find Gists</button>
+  </div>
+  <h1>Favorites</h1>
+  <div id="favorites-area"></div>
+  <div id="gist-area"></div>
+  </div>
+</body>
+</html>
