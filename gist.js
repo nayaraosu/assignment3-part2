@@ -4,23 +4,80 @@ window.onload = function()
 	//document.getElementById("gist_area").innerHTML = "<b>stuff</b>";
 
 }
+function clearFavorites()
+{
+
+	document.getElementById("favorites").innerHTML = "";
+
+}
 function displayFavorites()
 {
+	clearFavorites();
+	if (localStorage.getItem("favorite-gists")) 
+	{
+		var fav_str = localStorage.getItem("favorite-gists");
+		var fav_tokens = fav_str.split(",");
+		var html_str = "<div>"
+		for(var i =0;i<fav_tokens.length;i++)
+		{
+		}
+	};
+}
+
+function removeFavorite(gist_id)
+{
+	if(inFavorites(gist_id))
+	{
+		var newFavs = []
+		var favs = localStorage.getItem("favorite-gists");
+		var fav_tokens = favs.split(",");
+		for(i=0;i<fav_tokens.length;i++)
+		{
+			gist = fav_tokens[i];
+			if(gist != gist_id )
+			{
+				newFavs.push(gist);
+			}
+		}
+		localStorage.setItem(newFavs.join());
+	}
+}
+
+function addFavorite(gist_id)
+{
+	inFavorites(gist_id);
+	if (localStorage.getItem("favorite-gists"))
+	{
+		var favs = localStorage.getItem("favorite-gists");
+		favs = favs+","+gist_id;
+		if(!inFavorites(gist_id))
+		{
+			localStorage.setItem("favorite-gists", favs);
+		}
+	}
+	else
+	{
+		localStorage.setItem("favorite-gists", gist_id);
+	}
 
 }
-function removeFavorite(p)
+function inFavorites(gist_id)
 {
-
-}
-function clearFavoriteArea()
-{
-
-}
-function addFavorite(p)
-{
-	var favdiv = document.getElementById("favorites");
-	favdiv.textContent = p;
-	localStorage.setItem('test', ['testdata', 'moredata']);
+	if (localStorage.getItem("favorite-gists"))
+	{
+		var favs = localStorage.getItem("favorite-gists");
+		var fav_tokens = favs.split(",");
+		for(i=0;i<fav_tokens.length;i++)
+		{
+			gist = fav_tokens[i];
+			if(gist == gist_id )
+			{
+				//console.log("has gist");
+				return true
+			}
+		}
+		return false;
+	}
 
 }
 function displayGists(gists)
@@ -52,13 +109,13 @@ function displayGists(gists)
 		var gist_created = gist_obj.created_at;
 		var gist_desc = gist_obj.description;
 		var gist_repo = gist_obj.url;
-		var idhtml = "<b>id: </b>" + gist_id +"<br>";
+		var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
 		var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
 		//var ownerhtml = "<b>Owner: </b>" + gist_owner +"<br>";
 		//var langhtml = "<b>Language: </b>" + gist_lang +"<br>";
-		var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
+		//var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
 		var btn =  '<button id="'+gist_id+'" onclick="addFavorite(this.id)">Add to Favorites</button>';
-		var gisthtml = "<div>" + idhtml + deschtml +rephtml+btn+"<br><br></div>";	
+		var gisthtml = "<div>" + idhtml + deschtml +btn+"<br><br></div>";	
 		var elem = document.createElement("div");
 		elem.id = "div-"+gist_id;
 		elem.innerHTML = gisthtml;
@@ -124,6 +181,36 @@ function getGists()
 	}
 	//console.length("Total: "+totalGists.length);
 
+}
+function getSingleGist(gist_id)
+{
+	var httpRequest = new XMLHttpRequest();
+	var gisturl = "https://api.github.com/gists/"+gist_id;
+	console.log(gisturl);
+	httpRequest.open('GET',gisturl);
+	httpRequest.send(null);
+		httpRequest.onreadystatechange = function()
+		{
+			if(httpRequest.readyState == 4)
+			{
+				if(httpRequest.status == 200)
+				{
+					console.log("All good!" + page );
+					var response = JSON.parse(httpRequest.responseText);
+					console.log(response.length);
+					insertFavorite(response);
+					return response;
+				}
+				else
+				{
+					console.log("All bad!");
+				}
+			}
+		};
+}
+function insertFavorite(response)
+{
+	
 }
 function getGistPage(page)
 {
