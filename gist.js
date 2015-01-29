@@ -64,6 +64,7 @@ function addFavorite(gist_id)
 	{
 		localStorage.setItem("favorite-gists", gist_id);
 	}
+	displayFavorites();
 
 }
 function inFavorites(gist_id)
@@ -85,53 +86,119 @@ function inFavorites(gist_id)
 	}
 
 }
+function filterGist(gist, pychk, sqlchk, jsonchk, javachk)
+{
+	var chosenlangs = []
+	if(pychk)
+	{
+		chosenlangs.push("python");
+	}
+	if(sqlchk)
+	{
+		chosenlangs.push("sql");
+	}
+
+	if(javachk)
+	{
+		chosenlangs.push("javascript");
+	}
+	if(jsonchk)
+	{
+		chosenlangs.push("json");
+	}
+	var files = gist.files;
+	//console.log(chosenlangs);
+	//console.log()
+	for (var prop in files)
+	{
+		
+		var dict = files[prop];
+		for(var item in dict)
+		{
+			if(item == "language")
+			{
+				gist_lang = dict.language;
+				for(var i = 0; i<chosenlangs.length;i++)
+				{	
+					if(gist_lang != null)
+					{	
+						if(gist_lang.toLowerCase() == chosenlangs[i])
+						{
+							return false;
+						}
+					}
+					
+				}
+			}
+		}
+
+	}
+	return true;
+}
+function getLanguage(gist)
+{
+	var files = gist.files;
+	for (var prop in files)
+	{
+		var dict = files[prop];
+		for(var item in dict)
+		{
+			if(item == "language")
+			{
+				return dict.language;
+			}
+		}
+	}
+
+}
 function displayGists(gists)
 {	var main = document.getElementById("gist-area");
-	//main.innerHTML = "";
-
-	//var allGists = getAllGists();
+	var python = document.getElementById("python").checked;
+	var json = document.getElementById("json").checked;
+	var javascript = document.getElementById("javascript").checked;
+	var sql = document.getElementById("sql").checked;	
 	for(var i = 0; i<gists.length; i++)
 	{
 		var gist_obj =  JSON.stringify(gists[i]);
 		gist_obj = gists[i];
 		var files = gist_obj.files;
-		for (var prop in files)
+		if (filterGist(gist_obj, python,sql,json,javascript))
 		{
-			//console.log(prop);
-			var dict = files[prop];
-			for(var item in dict)
+			for (var prop in files)
 			{
-				//console.log(item);
-				if(item == "language")
+				//console.log(prop);
+				var dict = files[prop];
+				for(var item in dict)
 				{
-					//console.log(dict.language);
+					//console.log(item);
+					if(item == "language")
+					{
+						//console.log(dict.language);
+					}
 				}
 			}
+			
+			var gist_id = gist_obj['id'];
+			var gist_owner = gist_obj.owner;
+			var gist_created = gist_obj.created_at;
+			var gist_desc = gist_obj.description;
+			var gist_repo = gist_obj.url;
+			var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
+			var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
+			//var ownerhtml = "<b>Owner: </b>" + gist_owner +"<br>";
+			var langhtml = "<b>Language: </b>" + getLanguage(gist_obj) +"<br>";
+			//var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
+			var btn =  '<button id="'+gist_id+'" onclick="addFavorite(this.id)">Add to Favorites</button>';
+			var gisthtml = "<div>" + idhtml + deschtml +langhtml+btn+"<br><br></div>";	
+			var elem = document.createElement("div");
+			elem.id = "div-"+gist_id;
+			elem.innerHTML = gisthtml;
+			
+			//var main = document.getElementById("gist-area");
+			//main.innerHTML = "";
+			main.appendChild(elem);
 		}
-		
-		var gist_id = gist_obj['id'];
-		var gist_owner = gist_obj.owner;
-		var gist_created = gist_obj.created_at;
-		var gist_desc = gist_obj.description;
-		var gist_repo = gist_obj.url;
-		var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
-		var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
-		//var ownerhtml = "<b>Owner: </b>" + gist_owner +"<br>";
-		//var langhtml = "<b>Language: </b>" + gist_lang +"<br>";
-		//var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
-		var btn =  '<button id="'+gist_id+'" onclick="addFavorite(this.id)">Add to Favorites</button>';
-		var gisthtml = "<div>" + idhtml + deschtml +btn+"<br><br></div>";	
-		var elem = document.createElement("div");
-		elem.id = "div-"+gist_id;
-		elem.innerHTML = gisthtml;
-		
-		//var main = document.getElementById("gist-area");
-		//main.innerHTML = "";
-		main.appendChild(elem);
-
 	} 
-
-
 }
 function doSomething(){
 
@@ -178,12 +245,29 @@ function clear()
 function getGists()
 {	
 	clear();
+	var main = document.getElementById("gist-area");
+	//main.innerHTML = "";
 	var pages = document.getElementById("gist-pages").value;
 	var totalGists = [];
-	for(i=1; i<=pages; i++)
+	if(pages >=1 && pages <=5)
 	{
-		getGistPage(i);
+		var header = document.createElement("h2");
+		header.innerHTML = "Search Results:<br><br>";
+		main.appendChild(header);
+
+		for(i=1; i<=pages; i++)
+		{
+			getGistPage(i);
+		}
 	}
+	else
+	{
+		var header = document.createElement("h2");
+		header.innerHTML = "Please enter page between 1 and 5.<br><br>";
+		main.appendChild(header);
+
+	}
+
 	//console.length("Total: "+totalGists.length);
 
 }
@@ -278,23 +362,7 @@ function getAllGists()
 		params.push("page="+i);
 	}
 	param_str = params.join("&");
-	if(pychk)
-	{
-		chosenlangs.push("python");
-	}
-	if(sqlchk)
-	{
-		chosenlangs.push("sql");
-	}
 
-	if(javachk)
-	{
-		chosenlangs.push("javascript");
-	}
-	if(jsonchk)
-	{
-		chosenlangs.push("JSON");
-	}
 	
 	//for(var pagex=1;pagex<5;pagex++)
 	{
