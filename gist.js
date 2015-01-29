@@ -164,32 +164,32 @@ function displayGists(gists)
 		var files = gist_obj.files;
 		if (filterGist(gist_obj, python,sql,json,javascript))
 		{
-			for (var prop in files)
-			{
-				//console.log(prop);
-				var dict = files[prop];
-				for(var item in dict)
-				{
-					//console.log(item);
-					if(item == "language")
-					{
-						//console.log(dict.language);
-					}
-				}
-			}
+			// for (var prop in files)
+			// {
+			// 	//console.log(prop);
+			// 	var dict = files[prop];
+			// 	for(var item in dict)
+			// 	{
+			// 		//console.log(item);
+			// 		if(item == "language")
+			// 		{
+			// 			//console.log(dict.language);
+			// 		}
+			// 	}
+			// }
 			
 			var gist_id = gist_obj['id'];
 			var gist_owner = gist_obj.owner;
 			var gist_created = gist_obj.created_at;
 			var gist_desc = gist_obj.description;
-			var gist_repo = gist_obj.url;
+			var gist_repo = gist_obj.html_url;
 			var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
 			var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
 			//var ownerhtml = "<b>Owner: </b>" + gist_owner +"<br>";
 			var langhtml = "<b>Language: </b>" + getLanguage(gist_obj) +"<br>";
 			//var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
 			var btn =  '<button id="'+gist_id+'" onclick="addFavorite(this.id)">Add to Favorites</button>';
-			var gisthtml = "<div>" + idhtml + deschtml +langhtml+btn+"<br><br></div>";	
+			var gisthtml = "<div class='gist-item'>" + idhtml + deschtml +langhtml+btn+"<br><br></div>";	
 			var elem = document.createElement("div");
 			elem.id = "div-"+gist_id;
 			elem.innerHTML = gisthtml;
@@ -200,39 +200,39 @@ function displayGists(gists)
 		}
 	} 
 }
-function doSomething(){
+// function doSomething(){
 
-	var gist = {id: "1234",
-				owner: "ash",
-				language: "Python",
-				description: "test gist",
-				repos_url: "http//ashoknayar.com"	};
+// 	var gist = {id: "1234",
+// 				owner: "ash",
+// 				language: "Python",
+// 				description: "test gist",
+// 				repos_url: "http//ashoknayar.com"	};
 
 
-	var id = gist.id
-	var owner = gist.owner;
-	var language = gist.language;
-	var description = gist.description;
-	var files = gist.files;
-	var url = gist.repos_url;
-	var idhtml = "<b>id: </b>" + id +"<br>";
-	var deschtml = "<b>id: </b>" + description +"<br>";
-	var ownerhtml = "<b>id: </b>" + owner +"<br>";
-	var langhtml = "<b>id: </b>" + language +"<br>";
-	var rephtml = "<b>rep: </b>" + url +"<br>";
-	var btn =  '<button id="find" onclick="favorite(this.id)">Find Gists</button>';
+// 	var id = gist.id
+// 	var owner = gist.owner;
+// 	var language = gist.language;
+// 	var description = gist.description;
+// 	var files = gist.files;
+// 	var url = gist.repos_url;
+// 	var idhtml = "<b>id: </b>" + id +"<br>";
+// 	var deschtml = "<b>id: </b>" + description +"<br>";
+// 	var ownerhtml = "<b>id: </b>" + owner +"<br>";
+// 	var langhtml = "<b>id: </b>" + language +"<br>";
+// 	var rephtml = "<b>rep: </b>" + url +"<br>";
+// 	var btn =  '<button id="find" onclick="favorite(this.id)">Find Gists</button>';
 
-	var gisthtml = "<div>" + idhtml + deschtml +ownerhtml + langhtml +rephtml+btn+"</div>";
-	console.log(files);
-	var elem = document.createElement("div");
-	elem.innerHTML = gisthtml;
-	eleme.appendChild(elem);
+// 	var gisthtml = "<div class='gist-item'>" + idhtml + deschtml +ownerhtml + langhtml +rephtml+btn+"</div>";
+// 	console.log(files);
+// 	var elem = document.createElement("div");
+// 	elem.innerHTML = gisthtml;
+// 	eleme.appendChild(elem);
 
-	//create gist html
-	//insert into a new div
-	// append to main div\
+// 	//create gist html
+// 	//insert into a new div
+// 	// append to main div\
 
-}
+// }
 
 function clear()
 {
@@ -304,13 +304,14 @@ function insertFavorite(response)
 		var gist_owner = response.owner;
 		var gist_created = response.created_at;
 		var gist_desc = response.description;
-		var gist_repo = response.url;
+		var gist_repo = response.html_url;
 		var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
 		var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
 		var btn =  '<button id="fav-'+gist_id+'" onclick="removeFavorite(this.id)">Remove Favorite</button>';		
-		var gisthtml = "<div>" + idhtml + deschtml +btn+"<br><br></div>";	
+		var gisthtml = "<div class='favorite-item'>" + idhtml + deschtml +btn+"<br><br></div>";	
 		var elem = document.createElement("div");
 		elem.id = "div-fav-"+gist_id;
+		elem.class = "favorite-item";
 		elem.innerHTML = gisthtml;
 			
 
