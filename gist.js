@@ -189,7 +189,7 @@ function displayGists(gists)
 			var langhtml = "<b>Language: </b>" + getLanguage(gist_obj) +"<br>";
 			//var rephtml = "<b>repo: </b>" + gist_repo +"<br>";
 			var btn =  '<button id="'+gist_id+'" onclick="addFavorite(this.id)">Add to Favorites</button>';
-			var gisthtml = "<div class='gist-item'>" + idhtml + deschtml +langhtml+btn+"<br><br></div>";	
+			var gisthtml = "<div class='gist-item'>" + idhtml + deschtml +langhtml+btn+"<br></div>";	
 			var elem = document.createElement("div");
 			elem.id = "div-"+gist_id;
 			elem.innerHTML = gisthtml;
@@ -308,7 +308,7 @@ function insertFavorite(response)
 		var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
 		var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
 		var btn =  '<button id="fav-'+gist_id+'" onclick="removeFavorite(this.id)">Remove Favorite</button>';		
-		var gisthtml = "<div class='favorite-item'>" + idhtml + deschtml +btn+"<br><br></div>";	
+		var gisthtml = "<div class='favorite-item'>" + idhtml + deschtml +btn+"<br></div>";	
 		var elem = document.createElement("div");
 		elem.id = "div-fav-"+gist_id;
 		elem.class = "favorite-item";
