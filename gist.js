@@ -2,12 +2,12 @@
 window.onload = function()
 {
 	//document.getElementById("gist_area").innerHTML = "<b>stuff</b>";
-
+	displayFavorites();
 }
 function clearFavorites()
 {
 
-	document.getElementById("favorites").innerHTML = "";
+	document.getElementById("favorites-area").innerHTML = "";
 
 }
 function displayFavorites()
@@ -20,12 +20,15 @@ function displayFavorites()
 		var html_str = "<div>"
 		for(var i =0;i<fav_tokens.length;i++)
 		{
+			getSingleGist(fav_tokens[i]);
 		}
 	};
 }
 
-function removeFavorite(gist_id)
+function removeFavorite(fav_gist_id)
 {
+	var gist_id = fav_gist_id.split("fav-")[1];
+	console.log(gist_id);
 	if(inFavorites(gist_id))
 	{
 		var newFavs = []
@@ -39,7 +42,8 @@ function removeFavorite(gist_id)
 				newFavs.push(gist);
 			}
 		}
-		localStorage.setItem(newFavs.join());
+		localStorage.setItem("favorite-gists",newFavs.join());
+		displayFavorites();
 	}
 }
 
@@ -53,6 +57,7 @@ function addFavorite(gist_id)
 		if(!inFavorites(gist_id))
 		{
 			localStorage.setItem("favorite-gists", favs);
+
 		}
 	}
 	else
@@ -195,9 +200,8 @@ function getSingleGist(gist_id)
 			{
 				if(httpRequest.status == 200)
 				{
-					console.log("All good!" + page );
+					console.log("All good! - Fav"  );
 					var response = JSON.parse(httpRequest.responseText);
-					console.log(response.length);
 					insertFavorite(response);
 					return response;
 				}
@@ -210,7 +214,26 @@ function getSingleGist(gist_id)
 }
 function insertFavorite(response)
 {
-	
+		var main = document.getElementById("favorites-area");
+
+		var gist_id = response['id'];
+		var gist_owner = response.owner;
+		var gist_created = response.created_at;
+		var gist_desc = response.description;
+		var gist_repo = response.url;
+		var idhtml = "<b>id: </b><a href="+gist_repo+">" + gist_id +"</a><br>";
+		var deschtml = "<b>Description: </b>" + gist_desc +"<br>";
+		var btn =  '<button id="fav-'+gist_id+'" onclick="removeFavorite(this.id)">Remove Favorite</button>';		
+		var gisthtml = "<div>" + idhtml + deschtml +btn+"<br><br></div>";	
+		var elem = document.createElement("div");
+		elem.id = "div-fav-"+gist_id;
+		elem.innerHTML = gisthtml;
+			
+
+		//var main = document.getElementById("gist-area");
+		//main.innerHTML = "";
+		main.appendChild(elem);
+
 }
 function getGistPage(page)
 {
