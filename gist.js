@@ -65,6 +65,7 @@ function addFavorite(gist_id)
 		localStorage.setItem("favorite-gists", gist_id);
 	}
 	displayFavorites();
+	getGists();
 
 }
 function inFavorites(gist_id)
@@ -162,7 +163,9 @@ function displayGists(gists)
 		var gist_obj =  JSON.stringify(gists[i]);
 		gist_obj = gists[i];
 		var files = gist_obj.files;
-		if (filterGist(gist_obj, python,sql,json,javascript))
+		var gist_id = gist_obj['id'];
+
+		if (filterGist(gist_obj, python,sql,json,javascript) && !inFavorites(gist_id))
 		{
 			// for (var prop in files)
 			// {
@@ -178,7 +181,7 @@ function displayGists(gists)
 			// 	}
 			// }
 			
-			var gist_id = gist_obj['id'];
+
 			var gist_owner = gist_obj.owner;
 			var gist_created = gist_obj.created_at;
 			var gist_desc = gist_obj.description;
