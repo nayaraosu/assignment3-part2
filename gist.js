@@ -1,17 +1,22 @@
 
 window.onload = function()
-{
+{	
+	// Display favorites immediately after loading
 	displayFavorites();
 }
 function clearFavorites()
 {
-
+	// Clear the favorites area by seeting the html to a blank string
 	document.getElementById("favorites-area").innerHTML = "";
 
 }
 function displayFavorites()
 {
+	// Clear favorites being reconstructing it
 	clearFavorites();
+
+	// If the local storage area exists, pull the string,
+	// split by comma, and send it off to AJAX to query github
 	if (localStorage.getItem("favorite-gists")) 
 	{
 		var fav_str = localStorage.getItem("favorite-gists");
@@ -25,6 +30,11 @@ function displayFavorites()
 
 function removeFavorite(fav_gist_id)
 {
+	// Check to see if ID is in the favorite list
+	// If so, loop through the list and add everything
+	// but the matching ID to the new list. Join the new
+	// List by comma and re-insert back into local storage
+	// Display favorites again
 	var gist_id = fav_gist_id.split("fav-")[1];
 	if(inFavorites(gist_id))
 	{
@@ -46,27 +56,36 @@ function removeFavorite(fav_gist_id)
 
 function addFavorite(gist_id)
 {
-	inFavorites(gist_id);
-	if (localStorage.getItem("favorite-gists"))
+	// Check to see if the gist id is not in the list alreadyy
+	// If local storage exists, add it to the string
+	// If not, add the single id
+
+	if (!inFavorites(gist_id))
 	{
-		var favs = localStorage.getItem("favorite-gists");
-		favs = favs+","+gist_id;
-		if(!inFavorites(gist_id))
+		if (localStorage.getItem("favorite-gists"))
 		{
-			localStorage.setItem("favorite-gists", favs);
+			var favs = localStorage.getItem("favorite-gists");
+			favs = favs+","+gist_id;
+			if(!inFavorites(gist_id))
+			{
+				localStorage.setItem("favorite-gists", favs);
 
+			}
 		}
-	}
-	else
-	{
-		localStorage.setItem("favorite-gists", gist_id);
-	}
-	displayFavorites();
-	getGists();
+		else
+		{
+			localStorage.setItem("favorite-gists", gist_id);
+		}
 
+		// Reconstruct the favorites list and the requested gists
+		displayFavorites();
+		getGists();
+	}
 }
 function inFavorites(gist_id)
 {
+	// Check to see if the gist is already in the favorites list
+	// Return true if it is, false if not
 	if (localStorage.getItem("favorite-gists"))
 	{
 		var favs = localStorage.getItem("favorite-gists");
@@ -83,8 +102,10 @@ function inFavorites(gist_id)
 	}
 	return false;
 }
+
 function filterGist(gist, pychk, sqlchk, jsonchk, javachk)
 {
+	// Add the requested languages to be displayed
 	var chosenlangs = []
 	if(pychk)
 	{
@@ -103,6 +124,17 @@ function filterGist(gist, pychk, sqlchk, jsonchk, javachk)
 	{
 		chosenlangs.push("json");
 	}
+
+	// If no languages are selected, just return all any and all results
+	if (chosenlangs.length == 0)
+	{
+		return true;
+	}
+	// Dig down through the "files" values and find the language
+	// Match it up against any of the user requested languages.
+	// If they match,  return true.
+	// KNOWN ISSUE: Sometimes Javascript files will have two languages: HTML and Javascript.
+	//	HTML will show up if a provided Javascript file is also there
 	var files = gist.files;
 	for (var prop in files)
 	{
@@ -119,7 +151,7 @@ function filterGist(gist, pychk, sqlchk, jsonchk, javachk)
 					{	
 						if(gist_lang.toLowerCase() == chosenlangs[i])
 						{
-							return false;
+							return true;
 						}
 					}
 					
@@ -128,10 +160,11 @@ function filterGist(gist, pychk, sqlchk, jsonchk, javachk)
 		}
 
 	}
-	return true;
+	return false;
 }
 function getLanguage(gist)
 {
+	// Goes through the gist object and finds the language
 	var files = gist.files;
 	for (var prop in files)
 	{
@@ -146,12 +179,19 @@ function getLanguage(gist)
 	}
 
 }
+
 function displayGists(gists)
-{	var main = document.getElementById("gist-area");
+{	// Get the <div> area for gists
+	var main = document.getElementById("gist-area");
+
+	// Get the user requested languages
 	var python = document.getElementById("python").checked;
 	var json = document.getElementById("json").checked;
 	var javascript = document.getElementById("javascript").checked;
 	var sql = document.getElementById("sql").checked;	
+	
+	// For every gist, pull out description, id, and url. 
+	// Create and html string and inject it into the "gist-area"
 	for(var i = 0; i<gists.length; i++)
 	{
 		var gist_obj =  JSON.stringify(gists[i]);
@@ -160,7 +200,8 @@ function displayGists(gists)
 		var gist_id = gist_obj['id'];
 
 		if (filterGist(gist_obj, python,sql,json,javascript) && !inFavorites(gist_id))
-		{
+		{	
+			console.log("displaying");
 			var gist_owner = gist_obj.owner;
 			var gist_created = gist_obj.created_at;
 			var gist_desc = gist_obj.description;
@@ -179,20 +220,26 @@ function displayGists(gists)
 }
 
 function clear()
-{
+{	
+	// Clear out the "gist-area" before rebuilding it
 	var mainDiv = document.getElementById("gist-area");
 	mainDiv.innerHTML = "";
-	console.log("Page cleared");
 
 }
 
 function getGists()
 {	
+	// Clear the gist-area
 	clear();
+
+	// Get gist-area of page
 	var main = document.getElementById("gist-area");
-	//main.innerHTML = "";
+	
+	// Get number of pages and make sure it is between 1-5
 	var pages = document.getElementById("gist-pages").value;
 	var totalGists = [];
+
+	// Request each page 
 	if(pages >=1 && pages <=5)
 	{
 		var header = document.createElement("h2");
@@ -204,6 +251,7 @@ function getGists()
 			getGistPage(i);
 		}
 	}
+	// If the request is not between 1-5, let the user know
 	else
 	{
 		var header = document.createElement("h2");
@@ -211,11 +259,13 @@ function getGists()
 		main.appendChild(header);
 	}
 }
+
+
 function getSingleGist(gist_id)
 {
+	// Create AJAX request for a single gist id
 	var httpRequest = new XMLHttpRequest();
 	var gisturl = "https://api.github.com/gists/"+gist_id;
-	console.log(gisturl);
 	httpRequest.open('GET',gisturl);
 	httpRequest.send(null);
 		httpRequest.onreadystatechange = function()
@@ -238,6 +288,8 @@ function getSingleGist(gist_id)
 }
 function insertFavorite(response)
 {
+		// Appends a gist to the favorites area
+
 		var main = document.getElementById("favorites-area");
 
 		var gist_id = response['id'];
@@ -259,7 +311,8 @@ function insertFavorite(response)
 
 }
 function getGistPage(page)
-{
+{		
+		// Request a page of gits using AJAX
 		var httpRequest = new XMLHttpRequest();
 		var gisturl = "https://api.github.com/gists?page="+page;
 		console.log(gisturl);
@@ -271,9 +324,8 @@ function getGistPage(page)
 			{
 				if(httpRequest.status == 200)
 				{
-					console.log("All good!" + page );
+					console.log("All good!"  );
 					var response = JSON.parse(httpRequest.responseText);
-					console.log(response.length);
 					displayGists(response);
 					return response;
 				}
