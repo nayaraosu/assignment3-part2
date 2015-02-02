@@ -1,9 +1,9 @@
 
 window.onload = function()
-{	
-	// Display favorites immediately after loading
+{
 	displayFavorites();
 }
+
 function clearFavorites()
 {
 	// Clear the favorites area by seeting the html to a blank string
